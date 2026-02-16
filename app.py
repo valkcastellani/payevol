@@ -52,7 +52,8 @@ years = list(range(min_y, max_y + 1))
 default_ref = max(MIN_REF, today_m1)
 default_y, default_m = default_ref.year, default_ref.month
 
-c_m, c_y, c_sr, c_sc = st.columns([1, 1.2, 2, 2])
+
+c_y, c_m, c_sr, c_sc = st.columns([1.2, 1, 2, 2])
 
 with c_y:
     year = st.selectbox("Ano (ref.)", years, index=years.index(default_y))
@@ -142,46 +143,46 @@ if inpc_ok:
 if float(salary_current) > 0:
     plot_df["Salário atual (R$)"] = float(salary_current)
 
-# st.line_chart(plot_df)
-# --- Ajuste automático de eixo Y (min/max entre as séries exibidas) ---
-# (remove colunas totalmente NaN, por exemplo INPC se não disponível)
-plot_df2 = plot_df.copy()
-plot_df2 = plot_df2.dropna(axis=1, how="all")
+st.line_chart(plot_df)
+# # --- Ajuste automático de eixo Y (min/max entre as séries exibidas) ---
+# # (remove colunas totalmente NaN, por exemplo INPC se não disponível)
+# plot_df2 = plot_df.copy()
+# plot_df2 = plot_df2.dropna(axis=1, how="all")
 
-# calcula min/max global entre as séries
-y_min = float(plot_df2.min(numeric_only=True).min())
-y_max = float(plot_df2.max(numeric_only=True).max())
+# # calcula min/max global entre as séries
+# y_min = float(plot_df2.min(numeric_only=True).min())
+# y_max = float(plot_df2.max(numeric_only=True).max())
 
-# pequena folga para não “colar” no topo/rodapé
-pad = (y_max - y_min) * 0.03 if y_max > y_min else (y_max * 0.03 if y_max else 1.0)
-y_domain = [y_min - pad, y_max + pad]
+# # pequena folga para não “colar” no topo/rodapé
+# pad = (y_max - y_min) * 0.03 if y_max > y_min else (y_max * 0.03 if y_max else 1.0)
+# y_domain = [y_min - pad, y_max + pad]
 
-# Altair pede formato "longo"
-long_df = (
-    plot_df2.reset_index()
-    .rename(columns={"index": "ref_date"})
-    .melt(id_vars=["ref_date"], var_name="Série", value_name="Valor")
-    .dropna()
-)
+# # Altair pede formato "longo"
+# long_df = (
+#     plot_df2.reset_index()
+#     .rename(columns={"index": "ref_date"})
+#     .melt(id_vars=["ref_date"], var_name="Série", value_name="Valor")
+#     .dropna()
+# )
 
-chart = (
-    alt.Chart(long_df)
-    .mark_line()
-    .encode(
-        x=alt.X("ref_date:T", title="Mês"),
-        y=alt.Y("Valor:Q", title="R$", scale=alt.Scale(domain=y_domain)),
-        color=alt.Color("Série:N", title="Séries"),
-        tooltip=[
-            alt.Tooltip("ref_date:T", title="Mês"),
-            alt.Tooltip("Série:N"),
-            alt.Tooltip("Valor:Q", format=",.2f", title="Valor (R$)"),
-        ],
-    )
-    .properties(height=420)
-    .interactive()
-)
+# chart = (
+#     alt.Chart(long_df)
+#     .mark_line()
+#     .encode(
+#         x=alt.X("ref_date:T", title="Mês"),
+#         y=alt.Y("Valor:Q", title="R$", scale=alt.Scale(domain=y_domain)),
+#         color=alt.Color("Série:N", title="Séries"),
+#         tooltip=[
+#             alt.Tooltip("ref_date:T", title="Mês"),
+#             alt.Tooltip("Série:N"),
+#             alt.Tooltip("Valor:Q", format=",.2f", title="Valor (R$)"),
+#         ],
+#     )
+#     .properties(height=420)
+#     .interactive()
+# )
 
-st.altair_chart(chart, use_container_width=True)
+# st.altair_chart(chart, use_container_width=True)
 
 # ---- KPIs finais (último mês da série) ----
 last_ref = series_sm["ref_date"].iloc[-1].date()
@@ -200,25 +201,23 @@ if float(salary_current) > 0:
     m4.metric("Salário atual − (k×SM)", brl(float(salary_current) - equiv_last_sm))
 
 with st.expander("Ver tabela mensal"):
-    tbl = pd.DataFrame(
-        {
-            "Mês/Ano": series_sm["mm_yyyy"],
-            "Salário mínimo (R$)": series_sm["min_wage"].map(brl),
-            "Equivalente (k×SM) (R$)": series_sm["equiv_brl"].map(brl),
-            "Atualizado pelo IPCA (R$)": series_ipca.set_index("ref_date")[
-                "salary_ipca"
-            ]
+    tbl_dict = {
+        "Mês/Ano": series_sm["mm_yyyy"],
+        "Salário mínimo (R$)": series_sm["min_wage"].map(brl),
+        "Equivalente (k×SM) (R$)": series_sm["equiv_brl"].map(brl),
+        "Atualizado pelo IPCA (R$)": series_ipca.set_index("ref_date")["salary_ipca"]
+        .reindex(series_sm["ref_date"])
+        .map(brl)
+        .values,
+    }
+    if inpc_ok:
+        tbl_dict["Atualizado pelo INPC (R$)"] = (
+            series_inpc.set_index("ref_date")["salary_inpc"]
             .reindex(series_sm["ref_date"])
             .map(brl)
-            .values,
-            "Atualizado pelo INPC (R$)": series_inpc.set_index("ref_date")[
-                "salary_inpc"
-            ]
-            .reindex(series_sm["ref_date"])
-            .map(brl)
-            .values,
-        }
-    )
+            .values
+        )
+    tbl = pd.DataFrame(tbl_dict)
     st.dataframe(tbl, use_container_width=True)
 
 
