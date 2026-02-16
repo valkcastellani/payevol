@@ -1,4 +1,4 @@
-from datetime import date
+import datetime
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -15,7 +15,7 @@ from payevol.services.inpc import fetch_inpc_number_index
 from payevol.services.series import build_inpc_adjusted_series
 
 APP_TITLE = "payEvol - Evolução Salarial"
-MIN_REF = date(1994, 7, 1)
+MIN_REF = datetime.date(1994, 7, 1)
 
 # ---------------- UI ----------------
 
@@ -28,6 +28,10 @@ st.markdown(
       .block-container { max-width: 1250px; padding-top: 1.2rem; }
       div[data-testid="stNumberInput"] input { padding-top: .25rem; padding-bottom: .25rem; }
       div[data-testid="stSelectbox"] div[role="button"] { padding-top: .25rem; padding-bottom: .25rem; }
+      
+      div[data-testid="stNumberInputContainer"] {
+          background-color: #f0f2f6; /* cor de fundo mais clara */
+      }      
     </style>
     """,
     unsafe_allow_html=True,
@@ -72,7 +76,7 @@ with c_m:
     default_month = default_m if default_m in months else months[0]
     month = st.selectbox("Mês (ref.)", months, index=months.index(default_month))
 
-ref = date(year, month, 1)
+ref = datetime.date(year, month, 1)
 
 with c_sr:
     salary_ref = st.number_input(
@@ -112,7 +116,7 @@ col4.metric("Múltiplo na ref.", f"{k_sm:.4g} SM")
 st.divider()
 
 # ---- Séries mensais ----
-st.subheader("📈 Evolução mensal: equivalente por SM vs IPCA")
+st.subheader("📈 Evolução mensal: equivalente por SM, IPCA, INPC")
 
 series_sm = build_equivalent_salary_series_sm(
     ref, float(salary_ref), sm_changes
@@ -224,3 +228,54 @@ with st.expander("Ver tabela mensal"):
 st.caption(
     "Fontes: salário mínimo (Previdenciarista), IPCA (IBGE/SIDRA – tabela 1737) e INPC (IBGE/SIDRA – tabela 1738)."
 )
+
+# ---- Rodapé ----
+import datetime
+import streamlit as st
+import streamlit.components.v1 as components
+
+ano_atual = datetime.date.today().year
+APP_NAME = "payEvol"
+APP_VERSION = "v0.1.1"  # opcional
+
+footer_html = f"""
+<div style="margin-top:2.2rem;">
+  <hr style="border:none;border-top:1px solid rgba(49,51,63,0.2); margin: 0 0 0.9rem 0;">
+
+  <div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:0.6rem 1rem;
+    font-size:0.92rem;
+    color: rgba(49,51,63,0.85);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  ">
+    <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+      <span style="font-weight:700; color: rgba(49,51,63,0.95);">{APP_NAME}</span>
+      <span style="opacity:0.75;">{APP_VERSION}</span>
+      <span style="opacity:0.55;">•</span>
+      <span>© 2025–{ano_atual} <b style="font-weight:700;">Valk Castellani</b></span>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:0.9rem; flex-wrap:wrap;">
+      <a href="https://www.linkedin.com/in/valkcastellani" target="_blank"
+         style="text-decoration:none; font-weight:700; color: inherit;">LinkedIn</a>
+      <span style="opacity:0.45;">|</span>
+      <a href="https://github.com/valkcastellani" target="_blank"
+         style="text-decoration:none; font-weight:700; color: inherit;">GitHub</a>
+      <span style="opacity:0.45;">|</span>
+      <a href="https://github.com/valkcastellani/payEvol" target="_blank"
+         style="text-decoration:none; font-weight:700; color: inherit;">Repositório</a>
+    </div>
+  </div>
+
+  <div style="margin-top:0.55rem; font-size:0.82rem; color: rgba(49,51,63,0.65); line-height:1.35;">
+    Índices e cálculos: confira as fontes oficiais no README do projeto.
+  </div>
+</div>
+"""
+
+# height: ajuste se você acrescentar mais linhas
+components.html(footer_html, height=110)
