@@ -1,75 +1,62 @@
 # payEvol - Evolução Salarial
 
-## O que é?
-O payEvol é uma aplicação web interativa que permite analisar a evolução de salários no Brasil, comparando diferentes métodos de atualização: múltiplos do salário mínimo, ajuste pelo IPCA e INPC, e comparação com o salário atual. A ferramenta é voltada para profissionais, estudantes e interessados em economia, finanças e direito trabalhista.
+## Visão Geral
+O payEvol é uma aplicação web interativa para análise da evolução do poder de compra de salários no Brasil, desde julho de 1994 até o mês anterior ao atual. A ferramenta compara diferentes métodos de atualização salarial: múltiplos do salário mínimo, correção pelo IPCA, pelo INPC e comparação direta com o salário atual informado pelo usuário.
 
-## Como funciona?
-- Você escolhe uma referência de mês/ano (a partir de 07/1994) e informa o salário na referência.
-- O app calcula e exibe:
-  - O equivalente mantendo o mesmo número de salários mínimos.
-  - O valor atualizado pelo IPCA.
-  - O valor atualizado pelo INPC (quando disponível).
-  - Comparação com o salário atual (opcional).
-- Os resultados são apresentados em gráficos interativos e tabelas.
+## Funcionalidades
+- **Simulação de evolução salarial**: informe um salário de referência (mês/ano) e veja sua evolução ao longo do tempo.
+- **Comparação por múltiplos do salário mínimo**: calcula o valor equivalente mantendo o mesmo número de salários mínimos ao longo dos anos.
+- **Correção monetária pelo IPCA e INPC**: atualiza o valor informado conforme a inflação oficial.
+- **Comparação com salário atual**: opcionalmente, compare o salário atual informado com os valores corrigidos.
+- **Visualização interativa**: gráficos e tabelas mensais, com legendas e tooltips em português.
 
-## Técnicas de Webscraping
+## Como funciona
+1. O usuário seleciona o mês/ano de referência (a partir de 07/1994) e informa o salário.
+2. O app busca automaticamente as séries históricas de salário mínimo, IPCA e INPC.
+3. Os valores são calculados e exibidos em gráficos e tabelas, permitindo fácil comparação.
 
-### Salário Mínimo
-- Os dados são obtidos via webscraping da página [Previdenciarista](https://previdenciarista.com/tabela-historica-dos-salarios-minimos/), utilizando `requests` para baixar o HTML e `pandas.read_html` para extrair as tabelas.
-- Caso a extração por tabela falhe, utiliza-se regex para buscar os valores diretamente no HTML.
+## Técnicas e Fontes de Dados
+### Webscraping e APIs
+- **Salário Mínimo**: obtido via webscraping da página [Previdenciarista](https://previdenciarista.com/tabela-historica-dos-salarios-minimos/) usando `requests` e `pandas.read_html`. Se necessário, faz fallback para regex no HTML.
+- **IPCA e INPC**: obtidos diretamente das APIs públicas do IBGE/SIDRA (JSON), garantindo dados oficiais e atualizados. Para o INPC, se a série principal não estiver disponível, reconstrói a série a partir da variação mensal.
 
-### IPCA e INPC
-- Os índices IPCA e INPC são obtidos diretamente das APIs públicas do IBGE/SIDRA, usando requisições HTTP (`requests`) e processamento de JSON.
-- Para o INPC, se a API principal não estiver disponível, o app reconstrói a série a partir da variação mensal (também obtida via API), encadeando os valores.
+### Principais bibliotecas
+- [Streamlit](https://streamlit.io/) — interface web interativa
+- [Altair](https://altair-viz.github.io/) — gráficos customizados
+- [Pandas](https://pandas.pydata.org/) — manipulação de dados
+- [Requests](https://docs.python-requests.org/) — acesso HTTP
 
-## Instalação
+## Instalação e Uso Local
+1. **Clone o repositório:**
+  ```bash
+  git clone https://github.com/valkcastellani/payevol.git
+  cd payevol
+  ```
+2. **(Opcional, porém recomendado) Crie um ambiente virtual:**
+  ```bash
+  python3 -m venv venv
+  source venv/bin/activate
+  ```
+3. **Instale as dependências:**
+  ```bash
+  pip install -r requirements.txt
+  ```
+4. **Execute o app:**
+  ```bash
+  streamlit run app.py
+  ```
+5. **Acesse pelo navegador:**
+  O endereço local será exibido (ex: http://localhost:8501).
 
-### 1. Clone o repositório
-```bash
-git clone https://github.com/valkcastellani/payevol.git
-cd payevol
-```
-
-### 2. Crie um ambiente virtual (opcional, mas recomendado)
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 3. Instale as dependências
-```bash
-pip install -r requirements.txt
-```
-
-## Como utilizar
-
-### 1. Execute o aplicativo
-```bash
-streamlit run app.py
-```
-
-### 2. Acesse pelo navegador
-O Streamlit irá mostrar o endereço local (ex: http://localhost:8501). Basta acessar e utilizar a interface.
-
-### 3. Utilização online
-Você pode acessar diretamente a versão online em:
-
+## Uso Online
+Acesse diretamente sem instalar nada:
 👉 [payevol.streamlit.app](https://payevol.streamlit.app)
 
-## Principais bibliotecas utilizadas
-- streamlit
-- pandas
-- requests
-- lxml
-- altair
-
-## Fontes de dados
-- Salário mínimo: Previdenciarista
-- IPCA e INPC: IBGE/SIDRA
-
 ## Licença
-Este projeto é open source. Consulte o arquivo LICENSE para mais detalhes.
+MIT License — © 2025–2026 Valk Luiz de Oliveira Castellani
 
----
+## Contato
+- [LinkedIn](https://www.linkedin.com/in/valkcastellani)
+- [GitHub](https://github.com/valkcastellani)
 
 Dúvidas ou sugestões? Abra uma issue ou entre em contato!
