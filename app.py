@@ -24,16 +24,198 @@ st.set_page_config(page_title=APP_TITLE, page_icon="💸", layout="wide")
 # container mais largo + inputs mais compactos
 st.markdown(
     """
-    <style>
-      .block-container { max-width: 1250px; padding-top: 1.2rem; }
-      div[data-testid="stNumberInput"] input { padding-top: .25rem; padding-bottom: .25rem; }
-      div[data-testid="stSelectbox"] div[role="button"] { padding-top: .25rem; padding-bottom: .25rem; }
-      
-      div[data-testid="stNumberInputContainer"] {
-          background-color: #f0f2f6; /* cor de fundo mais clara */
-      }      
-    </style>
-    """,
+<style>
+/* =========================
+   payEvol - Clean Modern UI
+   ========================= */
+
+/* ---- layout base ---- */
+.block-container{
+  max-width: 1180px;
+  padding-top: 1.2rem;
+  padding-bottom: 2.0rem;
+}
+
+h1, h2, h3, h4{
+  letter-spacing: -0.02em;
+}
+
+:root{
+  /* neutros */
+  --bg: #ffffff;
+  --card: #ffffff;
+  --muted: rgba(49,51,63,.62);
+  --text: rgba(49,51,63,.92);
+
+  /* bordas + sombras */
+  --border: rgba(49,51,63,.12);
+  --shadow: 0 8px 30px rgba(16,24,40,.06);
+
+  /* acento (bem discreto) */
+  --accent: #2f6fed; /* azul clean */
+  --accent-weak: rgba(47,111,237,.12);
+}
+
+/* ---- remove “peso” de elementos padrão ---- */
+hr{
+  border: none !important;
+  border-top: 1px solid var(--border) !important;
+  margin: 1.0rem 0 1.0rem 0 !important;
+}
+
+[data-testid="stAppViewContainer"]{
+  background: var(--bg);
+}
+
+/* ---- títulos/caption mais clean ---- */
+[data-testid="stCaptionContainer"]{
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+/* ---- Inputs como “cards” ---- */
+div[data-testid="stNumberInput"],
+div[data-testid="stSelectbox"]{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: none;
+  padding: .60rem .70rem .55rem .70rem;
+}
+
+/* deixa o label mais suave */
+div[data-testid="stNumberInput"] label,
+div[data-testid="stSelectbox"] label{
+  color: var(--muted);
+  font-weight: 600;
+  font-size: .88rem;
+}
+
+/* campos internos */
+div[data-testid="stNumberInput"] input,
+div[data-testid="stSelectbox"] div[role="button"]{
+  padding-top: .40rem !important;
+  padding-bottom: .40rem !important;
+  border-radius: 10px !important;
+}
+
+/* remove bordas internas “duplas” do baseweb */
+div[data-testid="stSelectbox"] div[role="button"]{
+  border: 1px solid transparent !important;
+}
+
+/* foco acessível */
+div[data-testid="stNumberInput"] input:focus,
+div[data-testid="stSelectbox"] div[role="button"]:focus{
+  outline: none !important;
+  box-shadow: 0 0 0 3px var(--accent-weak) !important;
+  border-color: rgba(47,111,237,.40) !important;
+}
+
+/* ---- Remover steppers do number_input (all browsers) ---- */
+div[data-testid="stNumberInput"] input[type="number"]::-webkit-outer-spin-button,
+div[data-testid="stNumberInput"] input[type="number"]::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}
+div[data-testid="stNumberInput"] input[type="number"]{
+  -moz-appearance: textfield;
+}
+
+/* ---- Métricas como cards ---- */
+[data-testid="stMetric"]{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: .85rem 1rem;
+  box-shadow: none;
+}
+
+[data-testid="stMetricLabel"]{
+  color: var(--muted);
+  font-weight: 700;
+}
+
+[data-testid="stMetricValue"]{
+  color: var(--text);
+  letter-spacing: -0.015em;
+}
+
+/* delta (quando existir) mais sutil */
+[data-testid="stMetricDelta"]{
+  font-weight: 700;
+}
+
+/* ---- Dataframe / tabela clean ---- */
+[data-testid="stDataFrame"]{
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* ---- Expander como card ---- */
+details[data-testid="stExpander"]{
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: .25rem .60rem;
+  background: var(--card);
+}
+
+details[data-testid="stExpander"] summary{
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ---- Gráfico: dá “respiro” ---- */
+[data-testid="stVegaLiteChart"], 
+[data-testid="stArrowVegaLiteChart"],
+[data-testid="stLineChart"]{
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: .65rem .65rem .20rem .65rem;
+  background: var(--card);
+}
+
+/* ---- Alertas (st.error etc) menos agressivos ---- */
+div[data-testid="stAlert"]{
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+/* ---- Tooltip padrão (quando houver) ---- */
+[role="tooltip"]{
+  border-radius: 12px !important;
+}
+
+/* ---- Pequenos ajustes de espaçamento ---- */
+[data-testid="stVerticalBlock"] > div:has(> [data-testid="stMetric"]){
+  gap: .85rem;
+}
+
+/* ---- Mobile: reduz padding ---- */
+@media (max-width: 900px){
+  .block-container{ padding-left: 1rem; padding-right: 1rem; }
+}
+
+div[data-testid="stNumberInputContainer"] { 
+  background-color: #f0f2f6; /* cor de fundo mais clara */ 
+}
+[data-testid="stVegaLiteChart"], 
+[data-testid="stArrowVegaLiteChart"],
+[data-testid="stLineChart"]{
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+
+  /* ajuste crítico */
+  overflow: hidden;
+
+  /* recomendo reduzir/remover o padding para não “empurrar” o SVG */
+  padding: 0.35rem 0.35rem 0.10rem 0.35rem; /* ou até 0 */
+}
+</style>
+""",
     unsafe_allow_html=True,
 )
 
@@ -47,11 +229,13 @@ st.caption(
 st.divider()
 
 # ---- Entradas em UMA LINHA ----
+
 today_m1 = add_months(first_day_current_month(), -1)  # mês atual - 1
 
 min_y, min_m = MIN_REF.year, MIN_REF.month
 max_y, max_m = today_m1.year, today_m1.month
-years = list(range(min_y, max_y + 1))
+# anos em ordem decrescente
+years = list(range(max_y, min_y - 1, -1))
 
 default_ref = max(MIN_REF, today_m1)
 default_y, default_m = default_ref.year, default_ref.month
@@ -147,46 +331,107 @@ if inpc_ok:
 if float(salary_current) > 0:
     plot_df["Salário atual (R$)"] = float(salary_current)
 
-st.line_chart(plot_df)
-# # --- Ajuste automático de eixo Y (min/max entre as séries exibidas) ---
-# # (remove colunas totalmente NaN, por exemplo INPC se não disponível)
-# plot_df2 = plot_df.copy()
-# plot_df2 = plot_df2.dropna(axis=1, how="all")
+# st.line_chart(plot_df)
+# --- Ajuste automático de eixo Y (min/max entre as séries exibidas) ---
+# (remove colunas totalmente NaN, por exemplo INPC se não disponível)
+plot_df2 = plot_df.copy()
+# --- Ajuste automático de eixo Y (min/max entre as séries exibidas) ---
+plot_df2 = plot_df.copy().dropna(axis=1, how="all")
 
-# # calcula min/max global entre as séries
-# y_min = float(plot_df2.min(numeric_only=True).min())
-# y_max = float(plot_df2.max(numeric_only=True).max())
+y_min = float(plot_df2.min(numeric_only=True).min())
+y_max = float(plot_df2.max(numeric_only=True).max())
 
-# # pequena folga para não “colar” no topo/rodapé
-# pad = (y_max - y_min) * 0.03 if y_max > y_min else (y_max * 0.03 if y_max else 1.0)
-# y_domain = [y_min - pad, y_max + pad]
+pad = (y_max - y_min) * 0.03 if y_max > y_min else (y_max * 0.03 if y_max else 1.0)
+y_domain = [y_min - pad, y_max + pad]
 
-# # Altair pede formato "longo"
-# long_df = (
-#     plot_df2.reset_index()
-#     .rename(columns={"index": "ref_date"})
-#     .melt(id_vars=["ref_date"], var_name="Série", value_name="Valor")
-#     .dropna()
-# )
+# --- calcula domínio X com folga (1 mês a mais) para o último ponto não sumir ---
+x_min = plot_df2.index.min()
+x_max = plot_df2.index.max()
+x_max_plus = pd.Timestamp(add_months(x_max.date(), 1))  # +1 mês à direita
 
-# chart = (
-#     alt.Chart(long_df)
-#     .mark_line()
-#     .encode(
-#         x=alt.X("ref_date:T", title="Mês"),
-#         y=alt.Y("Valor:Q", title="R$", scale=alt.Scale(domain=y_domain)),
-#         color=alt.Color("Série:N", title="Séries"),
-#         tooltip=[
-#             alt.Tooltip("ref_date:T", title="Mês"),
-#             alt.Tooltip("Série:N"),
-#             alt.Tooltip("Valor:Q", format=",.2f", title="Valor (R$)"),
-#         ],
-#     )
-#     .properties(height=420)
-#     .interactive()
-# )
+# Altair pede formato "longo"
+long_df = (
+    plot_df2.reset_index()
+    .rename(columns={"index": "ref_date"})
+    .melt(id_vars=["ref_date"], var_name="Série", value_name="Valor")
+    .dropna()
+)
 
-# st.altair_chart(chart, use_container_width=True)
+ptBR_time_locale = {
+    "dateTime": "%A, %e de %B de %Y %X",
+    "date": "%d/%m/%Y",
+    "time": "%H:%M:%S",
+    "periods": ["AM", "PM"],
+    "days": ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"],
+    "shortDays": ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"],
+    "months": [
+        "janeiro",
+        "fevereiro",
+        "março",
+        "abril",
+        "maio",
+        "junho",
+        "julho",
+        "agosto",
+        "setembro",
+        "outubro",
+        "novembro",
+        "dezembro",
+    ],
+    "shortMonths": [
+        "jan",
+        "fev",
+        "mar",
+        "abr",
+        "mai",
+        "jun",
+        "jul",
+        "ago",
+        "set",
+        "out",
+        "nov",
+        "dez",
+    ],
+}
+
+chart = (
+    alt.Chart(long_df)
+    .mark_line(point=alt.OverlayMarkDef(filled=True, size=55))
+    .encode(
+        x=alt.X(
+            "ref_date:T",
+            title="Mês",
+            scale=alt.Scale(domain=[x_min, x_max_plus]),
+            # FORÇA o texto do label (não depende do locale do browser)
+            axis=alt.Axis(labelExpr="timeFormat(datum.value, '%b/%Y')"),
+        ),
+        y=alt.Y("Valor:Q", title="R$", scale=alt.Scale(domain=y_domain)),
+        color=alt.Color("Série:N", title="Séries", legend=alt.Legend(orient="bottom")),
+        tooltip=[
+            alt.Tooltip("ref_date:T", title="Mês", format="%B/%Y"),
+            alt.Tooltip("Série:N"),
+            alt.Tooltip("Valor:Q", format=",.2f", title="Valor (R$)"),
+        ],
+    )
+    .properties(height=420, padding={"left": 8, "right": 22, "top": 6, "bottom": 6})
+    .interactive()
+)
+
+spec = chart.to_dict()
+
+# 1) locale no config do Vega-Lite
+spec.setdefault("config", {})
+spec["config"]["timeFormatLocale"] = ptBR_time_locale
+
+# 2) locale também no embedOptions (Streamlit às vezes só respeita aqui)
+spec.setdefault("usermeta", {})
+spec["usermeta"].setdefault("embedOptions", {})
+spec["usermeta"]["embedOptions"]["timeFormatLocale"] = ptBR_time_locale
+
+# (opcional) evita sizing estranho em alguns layouts
+spec.setdefault("autosize", {"type": "fit", "contains": "padding"})
+
+st.vega_lite_chart(spec, use_container_width=True)
 
 # ---- KPIs finais (último mês da série) ----
 last_ref = series_sm["ref_date"].iloc[-1].date()
@@ -194,15 +439,31 @@ equiv_last_sm = float(series_sm["equiv_brl"].iloc[-1])
 equiv_last_ipca = float(
     series_ipca.set_index("ref_date").loc[pd.Timestamp(last_ref), "salary_ipca"]
 )
+if inpc_ok:
+    equiv_last_inpc = float(
+        series_inpc.set_index("ref_date").loc[pd.Timestamp(last_ref), "salary_inpc"]
+    )
 
 m1, m2, m3, m4 = st.columns(4)
 m1.metric("Último mês no gráfico", last_ref.strftime("%m/%Y"))
 m2.metric("Equivalente (k×SM)", brl(equiv_last_sm))
 m3.metric("Atualizado pelo IPCA", brl(equiv_last_ipca))
+if inpc_ok:
+    m4.metric("Atualizado pelo INPC", brl(equiv_last_inpc))
 
 if float(salary_current) > 0:
     # comparações com salário atual
-    m4.metric("Salário atual − (k×SM)", brl(float(salary_current) - equiv_last_sm))
+    n1, n2, n3, n4 = st.columns(4)
+    n2.metric("Salário atual − (k×SM)", brl(float(salary_current) - equiv_last_sm))
+    n3.metric(
+        "Salário atual − Atualizado pelo IPCA",
+        brl(float(salary_current) - equiv_last_ipca),
+    )
+    if inpc_ok:
+        n4.metric(
+            "Salário atual − Atualizado pelo INPC",
+            brl(float(salary_current) - equiv_last_inpc),
+        )
 
 with st.expander("Ver tabela mensal"):
     tbl_dict = {
@@ -236,43 +497,51 @@ import streamlit.components.v1 as components
 
 ano_atual = datetime.date.today().year
 APP_NAME = "payEvol"
-APP_VERSION = "v0.1.1"  # opcional
+APP_VERSION = "v0.1.2"  # opcional
 
 footer_html = f"""
-<div style="margin-top:2.2rem;">
-  <hr style="border:none;border-top:1px solid rgba(49,51,63,0.2); margin: 0 0 0.9rem 0;">
-
+<div style="margin-top:2.0rem;">
   <div style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:0.6rem 1rem;
-    font-size:0.92rem;
-    color: rgba(49,51,63,0.85);
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    border: 1px solid rgba(49,51,63,0.12);
+    border-radius: 14px;
+    padding: 0.95rem 1rem;
+    background: #fff;
   ">
-    <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
-      <span style="font-weight:700; color: rgba(49,51,63,0.95);">{APP_NAME}</span>
-      <span style="opacity:0.75;">{APP_VERSION}</span>
-      <span style="opacity:0.55;">•</span>
-      <span>© 2025–{ano_atual} <b style="font-weight:700;">Valk Castellani</b></span>
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:0.5rem 1rem;
+      font-size:0.92rem;
+      color: rgba(49,51,63,0.85);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    ">
+      <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+        <span style="font-weight:800; color: rgba(49,51,63,0.95);">{APP_NAME}</span>
+        <span style="opacity:0.70;">{APP_VERSION}</span>
+        <span style="opacity:0.45;">•</span>
+        <span>© 2025–{ano_atual} <b style="font-weight:800;">Valk Castellani</b></span>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:0.85rem; flex-wrap:wrap;">
+        <a href="https://www.linkedin.com/in/valkcastellani" target="_blank"
+           style="text-decoration:none; font-weight:800; color: rgba(49,51,63,0.88);">
+           LinkedIn</a>
+        <span style="opacity:0.35;">|</span>
+        <a href="https://github.com/valkcastellani" target="_blank"
+           style="text-decoration:none; font-weight:800; color: rgba(49,51,63,0.88);">
+           GitHub</a>
+        <span style="opacity:0.35;">|</span>
+        <a href="https://github.com/valkcastellani/payEvol" target="_blank"
+           style="text-decoration:none; font-weight:800; color: rgba(49,51,63,0.88);">
+           Repositório</a>
+      </div>
     </div>
 
-    <div style="display:flex; align-items:center; gap:0.9rem; flex-wrap:wrap;">
-      <a href="https://www.linkedin.com/in/valkcastellani" target="_blank"
-         style="text-decoration:none; font-weight:700; color: inherit;">LinkedIn</a>
-      <span style="opacity:0.45;">|</span>
-      <a href="https://github.com/valkcastellani" target="_blank"
-         style="text-decoration:none; font-weight:700; color: inherit;">GitHub</a>
-      <span style="opacity:0.45;">|</span>
-      <a href="https://github.com/valkcastellani/payEvol" target="_blank"
-         style="text-decoration:none; font-weight:700; color: inherit;">Repositório</a>
+    <div style="margin-top:0.55rem; font-size:0.82rem; color: rgba(49,51,63,0.62); line-height:1.35;">
+      Índices e cálculos: confira as fontes oficiais no README do projeto.
     </div>
-  </div>
-
-  <div style="margin-top:0.55rem; font-size:0.82rem; color: rgba(49,51,63,0.65); line-height:1.35;">
-    Índices e cálculos: confira as fontes oficiais no README do projeto.
   </div>
 </div>
 """
